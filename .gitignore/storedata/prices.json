@@ -1,0 +1,22 @@
+{
+  "barque": 5000,
+  "bateaudefortune": 12500,
+  "bateausimple": 25000,
+  "voilier": 35000,
+  "grandbateau": 75000,
+  "bateaudecourse": 125000,
+  "naviredeguerre": 125000000,
+  "grandnaviredeguerre": 750000000,
+  "galiondeguerre": 1250000000,
+  "flottedeguerre": 2500000000,
+  "enormeflottedeguerre": 3500000000,
+  "sous-marin": 350000000,
+  "sous-marindeguerre": 700000000,
+  "sous-marindexplo": 700000000,
+  "navire": 150000,
+  "naviremarine": 1,
+  "baratie": 900000000,
+  "tenuetissu": 25000,
+  "tenueapproche": 200000,
+  "tenueameliore": 350000
+}
