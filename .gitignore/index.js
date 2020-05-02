@@ -54,4 +54,4 @@ fs.readdir("./commands/", (err, files) =>  {
 });
 
 
-bot.login('NzAyNTUyNzIxMzk1NTQ4MjQx.Xq21qg.Zz_kESHoNQaN-bgdaxPk_LeepIk');
+bot.login(process.env.TOKEN);
