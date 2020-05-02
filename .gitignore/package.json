@@ -4,7 +4,7 @@
 
   "description": "Example",
 
-  "version": "0.0.0",
+  "version": "0.0.1",
 
   "main": "index.js",
 
@@ -16,8 +16,11 @@
 
   "dependencies": {
 
-    "discord.js": "11.1.0",
-
+    "discord.js": "12.2.0",
+    "jimp": "0.10.3",
+    "moment": "2.25.1",
+    "sqlite": "4.0.7",
+    "sqlite3": "4.2.0"
     "request": "2.81.0"
 
   }
