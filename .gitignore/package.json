@@ -4,7 +4,7 @@
 
   "description": "Example",
 
-  "version": "0.0.1",
+  "version": "1.0.1",
 
   "main": "index.js",
 
@@ -47,5 +47,9 @@
     "ytdl-core": "^0.29.1"
 
   }
+   "engines": {
+  
+    "node": "13.8"
+    }
 
 }
