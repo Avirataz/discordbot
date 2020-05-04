@@ -13,6 +13,10 @@
     "start": "node index.js"
 
   },
+  "engines": {
+  
+    "node": "13.8"
+  }
 
   "dependencies": {
 
@@ -47,9 +51,5 @@
     "ytdl-core": "^0.29.1"
 
   }
-  "engines": {
-  
-    "node": "13.8"
-    }
 
 }
