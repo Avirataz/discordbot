@@ -47,7 +47,7 @@
     "ytdl-core": "^0.29.1"
 
   }
-   "engines": {
+  "engines": {
   
     "node": "13.8"
     }
