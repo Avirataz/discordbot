@@ -46,7 +46,7 @@
     "weather.js": "^0.1.0",
     "ytdl-core": "^0.29.1"
 
-  }
+  },
 
   "engines": {
     "node": "13.x"
