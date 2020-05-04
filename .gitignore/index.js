@@ -7,21 +7,11 @@ const sqlite = require('sqlite');
 const jimp = require('jimp');
 bot.commands = new Discord.Collection();
 let purple = botconfig.purple;
-let cooldown = new Set();
-let cdseconds = 5;
-const chratis_cooldown_time = 5;
-const money = require('discord-money');
-const moment = require('moment');
 const emoji = bot.emojis.get("559427989713190922");
 var spawning = "no";
 var cheerio = require("cheerio");
 var request = require("request");
-const yt = require("ytdl-core");
-const ffmpeg = require("ffmpeg");
-let queue = {};
 var prefix = (botconfig.prefix)
-var skipping = 0;
-var skips = 3;
 const m = require("moment-duration-format");
 let os = require('os')
 let cpuStat = require("cpu-stat")
@@ -58,119 +48,6 @@ fs.readdir("./commands/", (err, files) =>  {
 		}
   });
 });
-
-bot.on('guildMemberAdd', async member => {
-  let font = await jimp.loadFont(jimp.FONT_SANS_32_BLACK);
-  let font64 = await jimp.loadFont(jimp.FONT_SANS_64_BLACK);
-  let mask = await jimp.read('https://cdn.discordapp.com/attachments/464568657109057539/559768060035334170/Mask.png');
-  let welcome = await jimp.read('https://cdn.discordapp.com/attachments/559770699254857758/559779319505747970/w2.png');
-
-  jimp.read(member.user.displayAvatarURL).then(avatar => {
-    avatar.resize(318, 317);
-    mask.resize(318, 317);
-    avatar.mask(mask);
-
-  welcome.print(font64, 378, 165, member.user.username);
-  welcome.composite(avatar, 43, 38).write('Welcome2.png');
-  member.guild.channels.get('392772985192185857').send(`**Salutations** ${member} ** <a:intslPennyWaving:554045967511584778> ! Bienvenue sur le serveur rp écrit one piece de **Skrrr** hehe !
-Si tu as la moindre question réferrez-vous au channel <#567096398693007362>`, { files: ["Welcome2.png"] });
-  console.log('Image envoyé!');
-  })
-  .catch(err => {
-  console.log('Erreur');
-})
-});
-
-
-const commands = {
-	'play': (message) => {
-    if (queue[message.guild.id] === undefined) return message.channel.send(`Ajoute des sons déjà... with ${prefix}add`);
-		if (!message.guild.voiceConnection) return commands.join(message).then(() => commands.play(message));
-		if (queue[message.guild.id].playing) return message.channel.send('Already Playing');
-		let dispatcher;
-		queue[message.guild.id].playing = true;
-
-		console.log(queue);
-		(function play(song) {
-			console.log(song);
-			if (song === undefined) return message.channel.send('Queue vide').then(() => {
-				queue[message.guild.id].playing = false;
-        message.member.voiceChannel.leave();
-        bot.user.setActivity("One Piece RP ", {type: "WATCHING"});
-			});
-      message.channel.send(`Playing: **${song.title}** as requested by: **${song.requester}**`);
-      bot.user.setActivity(`${song.title}`, {type: "LISTENING"});
-			dispatcher = message.guild.voiceConnection.playStream(yt(song.url, { audioonly: true }), { passes : botconfig.passes });
-			let collector = message.channel.createCollector(m => m);
-			collector.on('message', m => {
-				if (m.content.startsWith(prefix + 'pause')) {
-          message.channel.send('paused').then(() => {dispatcher.pause();});
-          bot.user.setActivity("One Piece RP", {type: "WATCHING"});
-				} else if (m.content.startsWith(prefix + 'resume')){
-          message.channel.send('resumed').then(() => {dispatcher.resume();});
-          bot.user.setActivity(`${song.title}`, {type: "LISTENING"});
-				} else if (m.content.startsWith(prefix + 'skip')){
-					message.channel.send('skipped').then(() => {dispatcher.end();});
-				} else if (m.content.startsWith('volume+')){
-					if (Math.round(dispatcher.volume*50) >= 100) return message.channel.send(`Volume: ${Math.round(dispatcher.volume*50)}%`);
-					dispatcher.setVolume(Math.min((dispatcher.volume*50 + (2*(m.content.split('+').length-1)))/50,2));
-					message.channel.send(`Volume: ${Math.round(dispatcher.volume*50)}%`);
-				} else if (m.content.startsWith('volume-')){
-					if (Math.round(dispatcher.volume*50) <= 0) return message.channel.send(`Volume: ${Math.round(dispatcher.volume*50)}%`);
-					dispatcher.setVolume(Math.max((dispatcher.volume*50 - (2*(m.content.split('-').length-1)))/50,0));
-					message.channel.send(`Volume: ${Math.round(dispatcher.volume*50)}%`);
-				} else if (m.content.startsWith(prefix + 'time')){
-					message.channel.send(`time: ${Math.floor(dispatcher.time / 60000)}:${Math.floor((dispatcher.time % 60000)/1000) <10 ? '0'+Math.floor((dispatcher.time % 60000)/1000) : Math.floor((dispatcher.time % 60000)/1000)}`);
-				}
-			});
-			dispatcher.on('end', () => {
-				collector.stop();
-				play(queue[message.guild.id].songs.shift());
-			});
-			dispatcher.on('error', (err) => {
-				return message.channel.send('error: ' + err).then(() => {
-					collector.stop();
-					play(queue[message.guild.id].songs.shift());
-				});
-			});
-		})(queue[message.guild.id].songs.shift());
-	},
-	'join': (message) => {
-		return new Promise((resolve, reject) => {
-			const voiceChannel = message.member.voiceChannel;
-			if (!voiceChannel || voiceChannel.type !== 'voice') return message.reply('Ooops. Tes sûr d être en voc ?');
-      voiceChannel.join().then(connection => resolve(connection)).catch(err => reject(err));
-      message.reply("Jss là!")
-     });
-  },
-  'leave': (message) => {
-		return new Promise((resolve, reject) => {
-			const voiceChannel = message.member.voiceChannel;
-			if (!voiceChannel || voiceChannel.type !== 'voice') return message.reply('Tes pas en vocal...');
-      voiceChannel.leave();
-		});
-	},
-	'add': (message) => {
-		let url = message.content.split(' ')[1];
-		if (url == '' || url === undefined) return message.channel.send(`Ajoute une vidéo avec son lien YouTube ou son id déjà ? avec : ${prefix}add`);
-		yt.getInfo(url, (err, info) => {
-			if(err) return message.channel.send('Lien Youtube invalide: ' + err);
-			if (!queue.hasOwnProperty(message.guild.id)) queue[message.guild.id] = {}, queue[message.guild.id].playing = false, queue[message.guild.id].songs = [];
-			queue[message.guild.id].songs.push({url: url, title: info.title, requester: message.author.username});
-			message.channel.send(`added **${info.title}** to the queue`);
-		});
-	},
-	'queue': (message) => {
-		if (queue[message.guild.id] === undefined) return message.channel.send(`Ajoute une vidéo avec son lien YouTube ou son id déjà ? avec : ${prefix}add`);
-		let tosend = [];
-		queue[message.guild.id].songs.forEach((song, i) => { tosend.push(`${i+1}. ${song.title} - Requested by: ${song.requester}`);});
-		message.channel.send(`__**${message.guild.name}'s Sons Queue:**__ Actuellement **${tosend.length}** sons sont dans la file d'attente ${(tosend.length > 15 ? '*[Que les 15 prochains visibles]*' : '')}\n\`\`\`${tosend.slice(0,15).join('\n')}\`\`\``);
-	},
-
-	'reboot': (message) => {
-		if (message.author.id == botconfig.adminID) process.exit(); //Requires a node module like Forever to work.
-	}
-};
 
 bot.on("ready", () => {
   console.log(`Avi a démarré, avec ${bot.users.size} utilisateurs, dans ${bot.channels.size} channels de ${bot.guilds.size} serveurs.`);
