@@ -1,7 +1,7 @@
 const botconfig = require("./botconfig.json");
 const Discord = require("discord.js");
 const fs = require("fs");
-const bot = new Discord.Client({disableEveryone: true});
+const bot = new Discord.Client({disableEveryone: true},{ fetchAllMembers: true, sync: true });
 const path = require('path');
 const sqlite = require('sqlite');
 const jimp = require('jimp');
@@ -12,6 +12,7 @@ var spawning = "no";
 var cheerio = require("cheerio");
 var request = require("request");
 var prefix = (botconfig.prefix)
+const moment = require('moment');
 const m = require("moment-duration-format");
 let os = require('os')
 let cpuStat = require("cpu-stat")
