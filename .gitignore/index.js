@@ -7,12 +7,21 @@ const sqlite = require('sqlite');
 const jimp = require('jimp');
 bot.commands = new Discord.Collection();
 let purple = botconfig.purple;
+let cooldown = new Set();
+let cdseconds = 5;
+const chratis_cooldown_time = 5;
+const money = require('discord-money');
+const moment = require('moment');
 const emoji = bot.emojis.get("559427989713190922");
 var spawning = "no";
 var cheerio = require("cheerio");
 var request = require("request");
+const yt = require("ytdl-core");
+const ffmpeg = require("ffmpeg");
+let queue = {};
 var prefix = (botconfig.prefix)
-const moment = require('moment');
+var skipping = 0;
+var skips = 3;
 const m = require("moment-duration-format");
 let os = require('os')
 let cpuStat = require("cpu-stat")
@@ -56,226 +65,6 @@ bot.on("ready", () => {
 });
 
 bot.on("message", require('./afkListener.js'));
-
-bot.on("message", async message => {
-  if (commands.hasOwnProperty(message.content.toLowerCase().slice(botconfig.prefix.length).split(' ')[0])) commands[message.content.toLowerCase().slice(botconfig.prefix.length).split(' ')[0]](message);
-  var parts = message.content.split(" ");
-  if(message.author.bot) return;
-  if(message.channel.type === "dm") return;
-	let prefixes = JSON.parse(fs.readFileSync("./prefixes.json", "utf8"));
-	if(!prefixes[message.guild.id]){
-		prefixes[message.guild.id] = {
-			prefixes: botconfig.prefix
-		};
-	}
-  let prefix = prefixes[message.guild.id].prefixes;
-  if(!message.content.startsWith(prefix)) return;
-  //if(cooldown.has(message.author.id)){
-    //message.delete();
-    //let cdembed = new Discord.RichEmbed()
-    //.setAuthor(message.author.username)
-    //.setColor(botconfig.red)
-    //.addField("❌Error", "You need to wait 5 secs between commands.");
-    //return message.channel.send(cdembed).then(message => {message.delete(3000)});1
-  //}
-  if(!message.member.hasPermission("ADMINISTRATOR")){
-    cooldown.add(message.author.id);
-  }
-  let messageArray = message.content.split(" ");
-  let cmd = messageArray[0];
-  let args = messageArray.slice(1);
-  let commandfile = bot.commands.get(cmd.slice(prefix.length));
-  if(commandfile) commandfile.run(bot,message,args);
-
-  setTimeout(() => {
-    cooldown.delete(message.author.id);
-}, chratis_cooldown_time * 1000);
-
-if(message.author.bot) return;
-if(message.channel.type === "dm") return;
-
-let coinAmt = Math.floor(Math.random() * 15) + 1;
-let baseAmt = Math.floor(Math.random() * 15) + 1;
-console.log(`${coinAmt} ; ${baseAmt}`);
-
-
-
-
-
-//let prefix = prefixes[message.guild.id].prefixes;
-
-//let commandfile = bot.commands.get(cmd.slice(prefix.length));
-//if(commandfile && cmd.startsWith(prefix)) commandfile.run(bot,message,args);
-
-if(message.author.bot) return;
-
-var command = message.content.toLowerCase().slice(prefix.length).split(' ')[0];
-
-if (command === 'image'){
-  image(message, parts);
-
- }
-
- function image(message, parts) {
-
-  /* extract search query from message */
-
-  var search = parts.slice(1).join(" ");
-
-  var options = {
-      url: "http://results.dogpile.com/serp?qc=images&q=" + search,
-      method: "GET",
-      headers: {
-          "Accept": "text/html",
-          "User-Agent": "Chrome"
-      }
-  };
-  request(options, function(error, response, responseBody) {
-      if (error) {
-          // handle error
-          return;
-      }
-
-      /* Extract image URLs from responseBody using cheerio */
-
-      $ = cheerio.load(responseBody); // load responseBody into cheerio (jQuery)
-
-      // In this search engine they use ".image a.link" as their css selector for image links
-      var links = $(".image a.link");
-
-      // We want to fetch the URLs not the DOM nodes, we do this with jQuery's .attr() function
-      // this line might be hard to understand but it goes thru all the links (DOM) and stores each url in an array called urls
-      var urls = new Array(links.length).fill(0).map((v, i) => links.eq(i).attr("href"));
-      if (!urls.length) {
-          // Handle no results
-          return;
-      }
-      const embed = {
-        "title": "Recherche d'image",
-        "description": "Here's your image!",
-        "url": "https://discordapp.com",
-        "color": 10730482,
-        "timestamp": "2019-03-31T13:40:57.847Z",
-        "footer": {
-          "icon_url": message.author.displayAvatarURL,
-          "text": "discord.js"
-        },
-        "thumbnail": {
-          "url": "https://cdn.dscordapp.com/embed/avatars/0.png"
-        },
-
-        "image": {
-          "url": (urls[(randomNumber(21))])
-        },
-        "author": {
-          "name": message.author.tag,
-          "url": "https://discordapp.com",
-          "icon_url": message.author.displayAvatarURL
-        },
-        "fields": [
-          {
-            "name": "You searched for",
-            "value": search
-          }
-        ]
-      };
-      message.channel.send({ embed }).then(async embedMessage => {
-        await embedMessage.react("◀");
-        await embedMessage.react("▶");
-        await embedMessage.react("⏹");
-
-        const filter = (reaction, user) => {
-            return ['◀', '▶', '⏹'].includes(reaction.emoji.name) && user.id === message.author.id;
-        };
-        embedMessage.awaitReactions(filter, { max: 1, time: 10000, errors: ['time'] })
-            .then(collected => {
-                const reaction = collected.first();
-
-                if (reaction.emoji.name === '▶') {
-                  const embed = {
-                    "title": "Recherche d'image",
-                    "description": "Là voici, là voila ton image est là!",
-                    "url": "https://discordapp.com",
-                    "color": 10730482,
-                    "timestamp": "2019-03-31T13:40:57.847Z",
-                    "footer": {
-                      "icon_url": message.author.displayAvatarURL,
-                      "text": "discord.js"
-                    },
-                    "thumbnail": {
-                      "url": "https://cdn.dscordapp.com/embed/avatars/0.png"
-                    },
-                    "image": {
-                      "url": (urls[(randomNumber(21+1))])
-                    },
-                    "author": {
-                      "name": message.author.tag,
-                      "url": "https://discordapp.com",
-                      "icon_url": message.author.displayAvatarURL
-                    }
-
-                  };
-
-                  embedMessage.edit(new Discord.RichEmbed(embed));
-                  embedMessage.clearReactions().then(async embedMessage => {
-                  await embedMessage.react("◀");
-                  await embedMessage.react("▶");
-                  await embedMessage.react("⏹");
-
-                });
-
-
-                }
-
-
-                else if (reaction.emoji.name === '◀') {
-                  const embed = {
-                    "title": "Image Search",
-                    "description": "Là voici, là voila ton image est là!",
-                    "url": "https://discordapp.com",
-                    "color": 10730482,
-                    "timestamp": "2019-03-31T13:40:57.847Z",
-                    "footer": {
-                      "icon_url": message.author.displayAvatarURL,
-                      "text": "discord.js"
-                    },
-                    "thumbnail": {
-                      "url": "https://cdn.dscordapp.com/embed/avatars/0.png"
-                    },
-                    "image": {
-                      "url": (urls[(randomNumber(21-1))])
-                    },
-                    "author": {
-                      "name": message.author.tag,
-                      "url": "https://discordapp.com",
-                      "icon_url": message.author.displayAvatarURL
-                    }
-
-                  };
-                  embedMessage.edit(new Discord.RichEmbed(embed));
-                  embedMessage.clearReactions().then(async embedMessage => {
-                  await embedMessage.react("◀");
-                  await embedMessage.react("▶");
-                  await embedMessage.react("⏹");
-
-
-                  });
-
-
-                }
-
-
-                else if (reaction.emoji.name === '⏹'){
-                  embedMessage.delete()
-
-                }
-                if (reaction.emoji.author === bot) return;
-            })
-
-    });
-  })
- }
-});
 
 
 /// Mini Wiki Fdd
