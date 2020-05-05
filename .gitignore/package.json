@@ -19,6 +19,7 @@
     "all": "0.0.0",
     "cheerio": "^1.0.0-rc.2",
     "cpu-stat": "^2.0.1",
+    "m3u8stream": "^0.7.0",
     "dbl": "^0.1.12",
     "dblapi.js": "^2.3.0",
     "discord-money": "^0.2.0",
