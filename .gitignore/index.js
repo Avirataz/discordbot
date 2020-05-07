@@ -114,10 +114,6 @@ if(message.author.bot) return;
 
 var command = message.content.toLowerCase().slice(prefix.length).split(' ')[0];
 
-if (command === 'image'){
-  image(message, parts);
-
- }
 
 bot.on('message', msg => {
   if (msg.content === '.wiki Mera Mera no Mi') {
