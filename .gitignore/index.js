@@ -119,7 +119,7 @@ bot.on('message', message => {
   
 });
 
-bot.on('message', message => {
+bot.on("message", async message => {
 	
 
 
