@@ -98,9 +98,9 @@ bot.on("message", async message => {
 })
 
 // NonEgornomicInplementation
-bot.on('message', msg => {
+bot.on('message', message => {
 	
-  if (msg.content === '.shop') {
+  if (message.content === '.shop') {
   let shopEmbed = new Discord.RichEmbed()
   .setTitle("Boutique")
   .setDescription("Taper .buy <nomitem> pour acheter")
@@ -114,7 +114,7 @@ bot.on('message', msg => {
   .addField("Bateau de course(max 2 pers.) (5💖 / 0 💣)", "Nom de l'item : barque, Prix : 250 milles 💰")
   .addField("Navire (max 12 pers.) (20💖 / 1 💣)", "Nom de l'item : navire, Prix : 150 milles 💰")
   message.delete();
-  message.channel.send(shopEmbed).then(msg => {msg.delete(30000)});
+  message.channel.send(shopEmbed).then(message => {message.delete(30000)});
   }
   
 });
