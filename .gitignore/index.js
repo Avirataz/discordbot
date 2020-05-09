@@ -7,7 +7,6 @@ const sqlite = require('sqlite');
 const jimp = require('jimp');
 bot.commands = new Discord.Collection();
 client.commands = new Discord.Collection();
-let purple = botconfig.purple;
 let cooldown = new Set();
 let cdseconds = 5;
 const chratis_cooldown_time = 5;
