@@ -13,20 +13,10 @@ const chratis_cooldown_time = 5;
 const money = require('discord-money');
 const moment = require('moment');
 const emoji = bot.emojis.get("559427989713190922");
-var spawning = "no";
-var cheerio = require("cheerio");
 var request = require("request");
-const yt = require("ytdl-core");
-const ffmpeg = require("ffmpeg");
 let queue = {};
 var prefix = (botconfig.prefix)
-var skipping = 0;
-var skips = 3;
 const m = require("moment-duration-format");
-let os = require('os')
-let cpuStat = require("cpu-stat")
-const ms = require("ms")
-var opusscript = require("opusscript");
 const {
     version
 } = require("discord.js");
