@@ -95,17 +95,7 @@ bot.on("message", async message => {
   let args = messageArray.slice(1);
   let commandfile = bot.commands.get(cmd.slice(prefix.length));
   if(commandfile) commandfile.run(bot,message,args);
-
-  setTimeout(() => {
-    cooldown.delete(message.author.id);
-}, chratis_cooldown_time * 1000);
-
-if(message.author.bot) return;
-if(message.channel.type === "dm") return;
-
-let coinAmt = Math.floor(Math.random() * 15) + 1;
-let baseAmt = Math.floor(Math.random() * 15) + 1;
-console.log(`${coinAmt} ; ${baseAmt}`);
+})
 
 
 bot.login(process.env.BOT_TOKEN);
