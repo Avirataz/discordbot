@@ -22,6 +22,7 @@ let avatarurl = require("./playerequipment/avatar.json");
 let bateau = require("./playerequipment/bateau.json");
 const purple = botconfig.purple;
 const green = botconfig.green;
+const orange = botconfig.orange;
 let fruit = require("./playerequipment/fruit.json");
 let equipement = require("./playerequipment/equipement.json");
 var prefix = (botconfig.prefix)
