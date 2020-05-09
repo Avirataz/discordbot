@@ -257,12 +257,10 @@ bot.on('message', msg => {
       if (err) console.log(err)
     });
     message.reply(`Votre fruit a bien était mis à jour ! Il est désormais ${patpat}`)
-  }
+  })
 
 
 }
-  })
-  
-});
+  };
 
 bot.login(process.env.BOT_TOKEN);
